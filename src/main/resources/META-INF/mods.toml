@@ -1,28 +1,28 @@
 modLoader="javafml"
 loaderVersion="[31,)"
-issueTrackerURL="http://www.github.com/MelanX/modid/issues/"
+issueTrackerURL="http://www.github.com/MelanX/curse-of-curses/issues/"
 
 [[mods]]
-modId="modid"
+modId="curseofcurses"
 version="${file.jarVersion}"
 displayName="Mod ID"
-updateJSONURL="http://www.github.com/MelanX/modid/update/update.json"
+updateJSONURL="http://www.github.com/MelanX/curse-of-curses/update/update.json"
 displayURL="www.curseforge.com/members/melanx/"
 #logoFile="examplemod.png"
-credits=""
+credits="InQuognito for the idea on Darkhax' Cursed mod issue 7 on GitHub."
 authors="MelanX"
 description='''
-
+A mod which applies a random curse with a configurable chance each night to a random enchantable item in players inventory.
 '''
 
-[[dependencies.modid]]
+[[dependencies.curseofcurses]]
     modId="forge"
     mandatory=true
     versionRange="[31.1,)"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.modid]]
+[[dependencies.curseofcurses]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.15.2]"

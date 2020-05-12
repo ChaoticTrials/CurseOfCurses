@@ -53,7 +53,7 @@ sourceSets.main.resources {
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "modid",
+                "Specification-Title"     : "curseofcurses",
                 "Specification-Vendor"    : "MelanX",
                 "Specification-Version"   : "1",
                 "Implementation-Title"    : project.name,
