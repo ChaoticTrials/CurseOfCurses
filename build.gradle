@@ -1,3 +1,6 @@
+import net.minecraftforge.gradle.common.util.ModConfig
+import net.minecraftforge.gradle.common.util.RunConfig
+
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
@@ -22,46 +25,25 @@ archivesBaseName = "${modid}-${mc_version}"
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    mappings channel: 'snapshot', version: mappings_version
+    mappings("snapshot", mappings_version)
+//     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
-    runs {
-        client {
-            workingDirectory project.file('run_client')
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
+    createRunConfig("client")
+    createRunConfig("server")
+    createRunConfig("data", { RunConfig run ->
+        run.args "--mod", modid, "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources")
+    })
+}
 
-            mods {
-                curseofcurses {
-                    source sourceSets.main
-                }
-            }
+def createRunConfig(String name, Closure extra = {}) {
+    minecraft.runs.create(name) { RunConfig run ->
+        run.workingDirectory project.file("run_" + name)
+        run.property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+        run.property "forge.logging.console.level", "debug"
+        run.mods.create(modid) { ModConfig mod ->
+            source sourceSets.main
         }
-
-        server {
-            workingDirectory project.file('run_server')
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                curseofcurses {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run_data')
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-            args "--mod", modid, "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources")
-
-            mods {
-                curseofcurses {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
+    }.with(extra)
 }
 
 sourceSets.main.resources {
