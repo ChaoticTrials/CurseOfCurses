@@ -5,7 +5,7 @@ issueTrackerURL="http://www.github.com/MelanX/curse-of-curses/issues/"
 [[mods]]
 modId="curseofcurses"
 version="${file.jarVersion}"
-displayName="Mod ID"
+displayName="Curse of Curses"
 updateJSONURL="http://www.github.com/MelanX/curse-of-curses/update/update.json"
 displayURL="www.curseforge.com/members/melanx/"
 #logoFile="examplemod.png"
