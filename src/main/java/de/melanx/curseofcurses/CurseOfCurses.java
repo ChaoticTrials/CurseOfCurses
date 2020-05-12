@@ -91,7 +91,7 @@ public class CurseOfCurses {
                         if (curse != null) {
                             stack.addEnchantment(curse, curse.getMaxLevel());
                             player.sendStatusMessage(new TranslationTextComponent("curseofcurses.message", stack.getDisplayName(), curse.getDisplayName(curse.getMaxLevel())), false);
-                            player.playSound(SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.AMBIENT, 0.5F, 0.1F);
+                            player.func_213823_a(SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.AMBIENT, 0.5F, 0.1F);
                         }
                     }
                 }
