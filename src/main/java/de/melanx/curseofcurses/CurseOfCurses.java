@@ -26,7 +26,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 @Mod(CurseOfCurses.MODID)
 public class CurseOfCurses {
@@ -34,6 +36,8 @@ public class CurseOfCurses {
     public static final String MODID = "curseofcurses";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     private final List<Enchantment> curses = new ArrayList<>();
+    private final List<Integer> possibleTimes = new ArrayList<>();
+    private final Random random = new Random();
     public CurseOfCurses instance;
 
     public CurseOfCurses() {
@@ -64,23 +68,29 @@ public class CurseOfCurses {
                 curses.add(enchantment);
             }
         }
+        LOGGER.info(curses.size() + " curses loaded.");
+        for (int i = 0; i < 3; i++) {
+            possibleTimes.add(random.nextInt(3000) + 18000);
+        }
+        LOGGER.info("Changing dange times to " + Arrays.toString(possibleTimes.toArray()));
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.PlayerTickEvent event) {
+    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
         PlayerEntity player = event.player;
         World world = player.getEntityWorld();
 
-        if (event.phase == TickEvent.Phase.START)
-            if (!world.isRemote && world.getDayTime() == 18000) {
+        if (event.phase == TickEvent.Phase.START) {
+            if (!world.isRemote && possibleTimes.contains((int) world.getDayTime() % 24000)) {
+                LOGGER.info("It's dange now.");
                 PlayerInventory inventory = player.inventory;
                 for (int i = 0; i < inventory.getSizeInventory(); i++) {
                     ItemStack stack = inventory.getStackInSlot(i);
-                    if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && stack.isEnchanted() && ConfigHandler.curseChance.get() > world.getRandom().nextDouble()) {
+                    if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && stack.isEnchanted() && ConfigHandler.curseChance.get() > random.nextDouble()) {
                         Enchantment curse = Enchantments.AQUA_AFFINITY;
                         List<Enchantment> curses1 = new ArrayList<>(curses);
                         while (!canEnchant(curse, stack)) {
-                            int index = world.getRandom().nextInt(curses1.size());
+                            int index = random.nextInt(curses1.size());
                             curse = curses1.get(index);
                             curses1.remove(index);
                             if (curses1.isEmpty()) {
@@ -96,5 +106,18 @@ public class CurseOfCurses {
                     }
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onWorldTick(TickEvent.WorldTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            if (!event.world.isRemote && event.world.getDayTime() % 24000 == 12000) {
+                for (int i = 0; i < 3; i++) {
+                    possibleTimes.set(i, random.nextInt(3000) + 18000);
+                }
+                LOGGER.info("Changing dange times to " + Arrays.toString(possibleTimes.toArray()));
+            }
+        }
     }
 }
