@@ -1,5 +1,6 @@
 package de.melanx.curseofcurses.api;
 
+import de.melanx.curseofcurses.ConfigHandler;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;

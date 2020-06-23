@@ -18,10 +18,13 @@ public class ConfigHandler {
     }
 
     public static ForgeConfigSpec.DoubleValue curseChance;
+    public static ForgeConfigSpec.BooleanValue enchantedCurses;
 
     public static void init(ForgeConfigSpec.Builder builder) {
         curseChance = builder.comment("The chance for applying an curse enchantment to an item at midnight. [Default: 0.01 = 1%]")
                 .defineInRange("chance", 0.01, 0, 1);
+        enchantedCurses = builder.comment("If set to true, curses will applied to non-enchanted items, too [Default: false]")
+                .define("enchantedItems", false);
     }
 
     public static void loadConfig(ForgeConfigSpec spec, Path path) {
