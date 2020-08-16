@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[32,)"
 issueTrackerURL="http://www.github.com/MelanX/curse-of-curses/issues/"
+license="MIT License"
 
 [[mods]]
 modId="curseofcurses"
