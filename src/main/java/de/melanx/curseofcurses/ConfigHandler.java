@@ -20,6 +20,8 @@ public class ConfigHandler {
     public static ForgeConfigSpec.DoubleValue curseChance;
     public static ForgeConfigSpec.BooleanValue enchantedCurses;
     public static ForgeConfigSpec.IntValue curseAmount;
+    public static ForgeConfigSpec.IntValue curseTimeStart;
+    public static ForgeConfigSpec.IntValue curseTimeEnd;
 
     public static void init(ForgeConfigSpec.Builder builder) {
         curseChance = builder.comment("The chance for applying an curse enchantment to an item at midnight. [Default: 0.01 = 1%]")
@@ -28,6 +30,10 @@ public class ConfigHandler {
                 .define("enchantedItems", false);
         curseAmount = builder.comment("The amount of curses being applied at the \"curse time\" [Default: 1]")
                 .defineInRange("curseAmount", 1, 0, Integer.MAX_VALUE);
+        curseTimeStart = builder.comment("The earliest time when curses can be applied [Default: 18000]")
+                .defineInRange("curseTime.start", 18000, 0, 24000);
+        curseTimeEnd = builder.comment("The latest time when curses can be applied. Should be HIGHER then start time [Default: 21000]")
+                .defineInRange("curseTime.end", 21000, 0, 24000);
     }
 
     public static void loadConfig(ForgeConfigSpec spec, Path path) {
