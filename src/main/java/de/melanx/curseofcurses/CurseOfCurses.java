@@ -5,6 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -37,7 +38,7 @@ public class CurseOfCurses {
     }
 
     public void onServerFinished(FMLServerStartedEvent event) {
-        this.instance.generateTimes();
+        this.generateTimes();
         LOGGER.info("Changing dange times to " + Arrays.toString(possibleTimes.toArray()));
     }
 
@@ -49,7 +50,7 @@ public class CurseOfCurses {
         if (event.phase == TickEvent.Phase.START) {
             if (!world.isRemote && possibleTimes.contains((int) world.getDayTime() % 24000)) {
                 LOGGER.info("It's dange now.");
-                CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get());
+                CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), ConfigHandler.cursePerItem.get());
             }
         }
     }
@@ -58,9 +59,16 @@ public class CurseOfCurses {
     public void onWorldTick(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             if (!event.world.isRemote && event.world.getDayTime() % 24000 == 12000) {
-                this.instance.generateTimes();
+                this.generateTimes();
                 LOGGER.info("Changing dange times to " + Arrays.toString(possibleTimes.toArray()));
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onSleep(PlayerWakeUpEvent event) {
+        if (!event.getEntityLiving().getEntityWorld().isRemote && ConfigHandler.curseForSleep.get()) {
+            CurseUtil.applyCursesRandomly(event.getPlayer(), 1, ConfigHandler.enchantedCurses.get());
         }
     }
 

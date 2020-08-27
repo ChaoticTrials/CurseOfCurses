@@ -18,14 +18,18 @@ public class ConfigHandler {
     }
 
     public static ForgeConfigSpec.DoubleValue curseChance;
+    public static ForgeConfigSpec.BooleanValue cursePerItem;
     public static ForgeConfigSpec.BooleanValue enchantedCurses;
+    public static ForgeConfigSpec.BooleanValue curseForSleep;
     public static ForgeConfigSpec.IntValue curseAmount;
     public static ForgeConfigSpec.IntValue curseTimeStart;
     public static ForgeConfigSpec.IntValue curseTimeEnd;
 
     public static void init(ForgeConfigSpec.Builder builder) {
         curseChance = builder.comment("The chance for applying an curse enchantment to an item at midnight. [Default: 0.01 = 1%]")
-                .defineInRange("chance", 0.01, 0, 1);
+                .defineInRange("chance.percentage", 0.01, 0, 1);
+        cursePerItem = builder.comment("If set to true, each item will be checked to get cursed. Else it will stop after the first cursed item. [Default: false]")
+                .define("chance.perItem", false);
         enchantedCurses = builder.comment("If set to true, curses will applied to non-enchanted items, too [Default: false]")
                 .define("enchantedItems", false);
         curseAmount = builder.comment("The amount of curses being applied at the \"curse time\" [Default: 1]")
@@ -34,6 +38,8 @@ public class ConfigHandler {
                 .defineInRange("curseTime.start", 18000, 0, 24000);
         curseTimeEnd = builder.comment("The latest time when curses can be applied. Should be HIGHER then start time [Default: 21000]")
                 .defineInRange("curseTime.end", 21000, 0, 24000);
+        curseForSleep = builder.comment("If set to true, players get curses if they skip the night [Default: true]")
+                .define("cursedSleep", true);
     }
 
     public static void loadConfig(ForgeConfigSpec spec, Path path) {

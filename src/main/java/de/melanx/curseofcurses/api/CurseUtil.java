@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -43,16 +44,24 @@ public class CurseUtil {
     }
 
     public static void applyCursesRandomly(PlayerEntity player, double chance) {
-        applyCursesRandomly(player, chance, false);
+        applyCursesRandomly(player, chance, false, true);
     }
 
     public static void applyCursesRandomly(PlayerEntity player, double chance, boolean ignoreEnchantments) {
-        PlayerInventory inventory = player.inventory;
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
+        applyCursesRandomly(player, chance, ignoreEnchantments, true);
+    }
+
+    public static void applyCursesRandomly(PlayerEntity player, double chance, boolean ignoreEnchantments, boolean oneItemOnly) {
+        PlayerInventory inv = player.inventory;
+        List<ItemStack> inventory = new ArrayList<>();
+        inventory.addAll(inv.armorInventory);
+        inventory.addAll(inv.mainInventory);
+        inventory.addAll(inv.offHandInventory);
+        Collections.shuffle(inventory);
+        for (ItemStack stack : inventory) {
             if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && (stack.isEnchanted() || ignoreEnchantments) && chance > random.nextDouble()) {
+                Enchantment curse = Enchantments.AQUA_AFFINITY;
                 for (int j = 0; j < ConfigHandler.curseAmount.get(); j++) {
-                    Enchantment curse = Enchantments.AQUA_AFFINITY;
                     List<Enchantment> curses1 = new ArrayList<>(curses);
                     while (!CurseUtil.canEnchant(curse, stack)) {
                         int index = random.nextInt(curses1.size());
@@ -68,6 +77,9 @@ public class CurseUtil {
                         player.sendStatusMessage(new TranslationTextComponent("curseofcurses.message", stack.getDisplayName(), curse.getDisplayName(curse.getMaxLevel())), false);
                         player.playSound(SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.AMBIENT, 0.5F, 0.1F);
                     }
+                }
+                if (curse != null && curse != Enchantments.AQUA_AFFINITY && oneItemOnly) {
+                    break;
                 }
             }
         }
