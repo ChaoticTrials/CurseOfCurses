@@ -37,6 +37,7 @@ public class CurseOfCurses {
     }
 
     public void onServerFinished(FMLServerStartedEvent event) {
+        possibleTimes.clear();
         for (int i = 0; i < 3; i++) {
             possibleTimes.add(CurseUtil.random.nextInt(3000) + 18000);
         }
@@ -60,8 +61,9 @@ public class CurseOfCurses {
     public void onWorldTick(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             if (!event.world.isRemote && event.world.getDayTime() % 24000 == 12000) {
+                possibleTimes.clear();
                 for (int i = 0; i < 3; i++) {
-                    possibleTimes.set(i, CurseUtil.random.nextInt(3000) + 18000);
+                    possibleTimes.add(CurseUtil.random.nextInt(3000) + 18000);
                 }
                 LOGGER.info("Changing dange times to " + Arrays.toString(possibleTimes.toArray()));
             }

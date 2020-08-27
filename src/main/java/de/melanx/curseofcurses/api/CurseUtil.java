@@ -51,21 +51,23 @@ public class CurseUtil {
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && (stack.isEnchanted() || ignoreEnchantments) && chance > random.nextDouble()) {
-                Enchantment curse = Enchantments.AQUA_AFFINITY;
-                List<Enchantment> curses1 = new ArrayList<>(curses);
-                while (!CurseUtil.canEnchant(curse, stack)) {
-                    int index = random.nextInt(curses1.size());
-                    curse = curses1.get(index);
-                    curses1.remove(index);
-                    if (curses1.isEmpty()) {
-                        curse = null;
-                        break;
+                for (int j = 0; j < ConfigHandler.curseAmount.get(); j++) {
+                    Enchantment curse = Enchantments.AQUA_AFFINITY;
+                    List<Enchantment> curses1 = new ArrayList<>(curses);
+                    while (!CurseUtil.canEnchant(curse, stack)) {
+                        int index = random.nextInt(curses1.size());
+                        curse = curses1.get(index);
+                        curses1.remove(index);
+                        if (curses1.isEmpty()) {
+                            curse = null;
+                            break;
+                        }
                     }
-                }
-                if (curse != null) {
-                    stack.addEnchantment(curse, curse.getMaxLevel());
-                    player.sendStatusMessage(new TranslationTextComponent("curseofcurses.message", stack.getDisplayName(), curse.getDisplayName(curse.getMaxLevel())), false);
-                    player.playSound(SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.AMBIENT, 0.5F, 0.1F);
+                    if (curse != null) {
+                        stack.addEnchantment(curse, curse.getMaxLevel());
+                        player.sendStatusMessage(new TranslationTextComponent("curseofcurses.message", stack.getDisplayName(), curse.getDisplayName(curse.getMaxLevel())), false);
+                        player.playSound(SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.AMBIENT, 0.5F, 0.1F);
+                    }
                 }
             }
         }
@@ -73,6 +75,7 @@ public class CurseUtil {
 
     @SubscribeEvent
     public static void onServerFinished(FMLServerStartedEvent event) {
+        curses.clear();
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             if (enchantment.isCurse()) {
                 curses.add(enchantment);
@@ -80,5 +83,4 @@ public class CurseUtil {
         }
         LOGGER.info(curses.size() + " curses loaded.");
     }
-
 }
