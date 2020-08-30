@@ -1,5 +1,6 @@
 package de.melanx.curseofcurses.api;
 
+import de.melanx.curseofcurses.BlacklistHandler;
 import de.melanx.curseofcurses.ConfigHandler;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -13,8 +14,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,7 +66,7 @@ public class CurseUtil {
                         int index = random.nextInt(curses1.size());
                         curse = curses1.get(index);
                         curses1.remove(index);
-                        if (curses1.isEmpty()) {
+                        if (curses1.size() + 1 <= 0) {
                             curse = null;
                             break;
                         }
@@ -85,12 +84,17 @@ public class CurseUtil {
         }
     }
 
-    @SubscribeEvent
-    public static void onServerFinished(FMLServerStartedEvent event) {
+    public static void reloadCurses() {
         curses.clear();
+        if (!BlacklistHandler.BLACKLISTED_CURSES.isEmpty()) LOGGER.info("Curses on blacklist: ");
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             if (enchantment.isCurse()) {
-                curses.add(enchantment);
+                //noinspection ConstantConditions
+                if (!BlacklistHandler.BLACKLISTED_CURSES.contains(enchantment.getRegistryName().toString())) {
+                    curses.add(enchantment);
+                } else {
+                    LOGGER.info(enchantment.getRegistryName().toString());
+                }
             }
         }
         LOGGER.info(curses.size() + " curses loaded.");

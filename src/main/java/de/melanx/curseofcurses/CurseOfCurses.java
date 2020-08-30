@@ -10,14 +10,15 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Mod(CurseOfCurses.MODID)
@@ -32,14 +33,26 @@ public class CurseOfCurses {
         instance = this;
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConfigHandler.SERVER_CONFIG);
         ConfigHandler.loadConfig(ConfigHandler.SERVER_CONFIG, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()).resolve(MODID + "-server.toml"));
-        MinecraftForge.EVENT_BUS.register(CurseUtil.class);
         MinecraftForge.EVENT_BUS.addListener(this::onServerFinished);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onCommonSetup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onConfigChange);
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    private void onCommonSetup(FMLCommonSetupEvent event) {
+        BlacklistHandler.initBlacklist();
+        CurseUtil.reloadCurses();
     }
 
     public void onServerFinished(FMLServerStartedEvent event) {
         this.generateTimes();
-        LOGGER.info("Changing dange times to " + Arrays.toString(possibleTimes.toArray()));
+    }
+
+    private void onConfigChange(ModConfig.ModConfigEvent event) {
+        if (event.getConfig().getModId().equals(MODID)) {
+            BlacklistHandler.initBlacklist();
+            CurseUtil.reloadCurses();
+        }
     }
 
     @SubscribeEvent
@@ -60,7 +73,6 @@ public class CurseOfCurses {
         if (event.phase == TickEvent.Phase.START) {
             if (!event.world.isRemote && event.world.getDayTime() % 24000 == 12000) {
                 this.generateTimes();
-                LOGGER.info("Changing dange times to " + Arrays.toString(possibleTimes.toArray()));
             }
         }
     }

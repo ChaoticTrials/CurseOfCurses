@@ -5,6 +5,8 @@ import com.electronwill.nightconfig.core.io.WritingMode;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 
 public class ConfigHandler {
 
@@ -24,6 +26,7 @@ public class ConfigHandler {
     public static ForgeConfigSpec.IntValue curseAmount;
     public static ForgeConfigSpec.IntValue curseTimeStart;
     public static ForgeConfigSpec.IntValue curseTimeEnd;
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistCurses;
 
     public static void init(ForgeConfigSpec.Builder builder) {
         curseChance = builder.comment("The chance for applying an curse enchantment to an item at midnight. [Default: 0.01 = 1%]")
@@ -40,6 +43,8 @@ public class ConfigHandler {
                 .defineInRange("curseTime.end", 21000, 0, 24000);
         curseForSleep = builder.comment("If set to true, players get curses if they skip the night [Default: true]")
                 .define("cursedSleep", true);
+        blacklistCurses = builder.comment("Curses in this list will not be applied. You can use * as a wildcard.")
+                .defineList("blacklistedCurses", Collections.emptyList(), obj -> obj instanceof String);
     }
 
     public static void loadConfig(ForgeConfigSpec spec, Path path) {
