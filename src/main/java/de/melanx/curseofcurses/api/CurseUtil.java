@@ -63,13 +63,13 @@ public class CurseUtil {
                 for (int j = 0; j < ConfigHandler.curseAmount.get(); j++) {
                     List<Enchantment> curses1 = new ArrayList<>(curses);
                     while (!CurseUtil.canEnchant(curse, stack)) {
-                        int index = random.nextInt(curses1.size());
-                        curse = curses1.get(index);
-                        curses1.remove(index);
-                        if (curses1.size() + 1 <= 0) {
+                        if (curses1.isEmpty()) {
                             curse = null;
                             break;
                         }
+                        int index = random.nextInt(curses1.size());
+                        curse = curses1.get(index);
+                        curses1.remove(index);
                     }
                     if (curse != null) {
                         stack.addEnchantment(curse, curse.getMaxLevel());

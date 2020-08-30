@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Mod(CurseOfCurses.MODID)
@@ -86,8 +87,9 @@ public class CurseOfCurses {
 
     public void generateTimes() {
         possibleTimes.clear();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < ConfigHandler.dangeTimesPerNight.get(); i++) {
             possibleTimes.add(CurseUtil.random.nextInt(ConfigHandler.curseTimeEnd.get() - ConfigHandler.curseTimeStart.get()) + ConfigHandler.curseTimeStart.get());
         }
+        LOGGER.debug("Changing dange times to " + Arrays.toString(possibleTimes.toArray()));
     }
 }
