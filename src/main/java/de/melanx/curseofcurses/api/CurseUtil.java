@@ -24,8 +24,8 @@ import java.util.Random;
 
 public class CurseUtil {
 
-    public static final Random random = new Random();
-    private static final List<Enchantment> curses = new ArrayList<>();
+    public static final Random RANDOM = new Random();
+    private static final List<Enchantment> CURSES = new ArrayList<>();
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static boolean canEnchant(Enchantment enchantment, ItemStack stack) {
@@ -58,16 +58,16 @@ public class CurseUtil {
         inventory.addAll(inv.offHandInventory);
         Collections.shuffle(inventory);
         for (ItemStack stack : inventory) {
-            if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && (stack.isEnchanted() || ignoreEnchantments) && chance > random.nextDouble()) {
+            if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && (stack.isEnchanted() || ignoreEnchantments) && chance > RANDOM.nextDouble()) {
                 Enchantment curse = Enchantments.AQUA_AFFINITY;
                 for (int j = 0; j < ConfigHandler.curseAmount.get(); j++) {
-                    List<Enchantment> curses1 = new ArrayList<>(curses);
+                    List<Enchantment> curses1 = new ArrayList<>(CURSES);
                     while (!CurseUtil.canEnchant(curse, stack)) {
                         if (curses1.isEmpty()) {
                             curse = null;
                             break;
                         }
-                        int index = random.nextInt(curses1.size());
+                        int index = RANDOM.nextInt(curses1.size());
                         curse = curses1.get(index);
                         curses1.remove(index);
                     }
@@ -85,18 +85,18 @@ public class CurseUtil {
     }
 
     public static void reloadCurses() {
-        curses.clear();
+        CURSES.clear();
         if (!BlacklistHandler.BLACKLISTED_CURSES.isEmpty()) LOGGER.info("Curses on blacklist: ");
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             if (enchantment.isCurse()) {
                 //noinspection ConstantConditions
                 if (!BlacklistHandler.BLACKLISTED_CURSES.contains(enchantment.getRegistryName().toString())) {
-                    curses.add(enchantment);
+                    CURSES.add(enchantment);
                 } else {
                     LOGGER.info(enchantment.getRegistryName().toString());
                 }
             }
         }
-        LOGGER.info(curses.size() + " curses loaded.");
+        LOGGER.info(CURSES.size() + " curses loaded.");
     }
 }
