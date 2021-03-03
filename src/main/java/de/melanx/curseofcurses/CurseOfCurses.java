@@ -70,7 +70,7 @@ public class CurseOfCurses {
     @SubscribeEvent
     public void onSleep(PlayerWakeUpEvent event) {
         if (!event.getEntityLiving().getEntityWorld().isRemote && ConfigHandler.curseForSleep.get()) {
-            CurseUtil.applyCursesRandomly(event.getPlayer(), 1, ConfigHandler.enchantedCurses.get());
+            CurseUtil.applyCursesRandomly(event.getPlayer(), ConfigHandler.curseForSleepChance.get(), ConfigHandler.enchantedCurses.get());
         }
     }
 }
