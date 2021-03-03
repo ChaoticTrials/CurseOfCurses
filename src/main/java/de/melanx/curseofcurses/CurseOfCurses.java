@@ -3,10 +3,13 @@ package de.melanx.curseofcurses;
 import de.melanx.curseofcurses.api.CurseUtil;
 import de.melanx.curseofcurses.data.CursedData;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -70,7 +73,40 @@ public class CurseOfCurses {
     @SubscribeEvent
     public void onSleep(PlayerWakeUpEvent event) {
         if (!event.getEntityLiving().getEntityWorld().isRemote && ConfigHandler.curseForSleep.get()) {
-            CurseUtil.applyCursesRandomly(event.getPlayer(), ConfigHandler.curseForSleepChance.get(), ConfigHandler.enchantedCurses.get());
+            ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+            CurseUtil.applyCursesRandomly(player, ConfigHandler.curseForSleepChance.get(), ConfigHandler.enchantedCurses.get());
+
+            int row = ConfigHandler.sleepsInARow.get();
+            if (row == 1) {
+                return;
+            }
+
+            CompoundNBT nbt = player.getPersistentData();
+            int i = 1;
+            if (nbt.contains("SleepRow")) {
+                i = nbt.getInt("SleepRow") + 1;
+                nbt.putInt("SleepRow", i);
+            } else {
+                nbt.putInt("SleepRow", 1);
+            }
+
+            if (i >= ConfigHandler.sleepsInARow.get()) {
+                nbt.putInt("SleepRow", 0);
+                CurseUtil.applyCursesRandomly(player, ConfigHandler.curseForSleepChance.get(), ConfigHandler.enchantedCurses.get());
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void clonePlayer(PlayerEvent.Clone event) {
+        PlayerEntity newPlayer = event.getPlayer();
+        CompoundNBT newData = newPlayer.getPersistentData();
+
+        PlayerEntity oldPlayer = event.getOriginal();
+        CompoundNBT oldData = oldPlayer.getPersistentData();
+
+        if (!ConfigHandler.resetRowOnDeath.get()) {
+            newData.putInt("SleepRow", oldData.getInt("SleepRow"));
         }
     }
 }

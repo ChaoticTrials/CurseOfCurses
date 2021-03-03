@@ -24,6 +24,8 @@ public class ConfigHandler {
     public static ForgeConfigSpec.BooleanValue enchantedCurses;
     public static ForgeConfigSpec.BooleanValue curseForSleep;
     public static ForgeConfigSpec.DoubleValue curseForSleepChance;
+    public static ForgeConfigSpec.IntValue sleepsInARow;
+    public static ForgeConfigSpec.BooleanValue resetRowOnDeath;
     public static ForgeConfigSpec.IntValue curseAmount;
     public static ForgeConfigSpec.IntValue curseTimeStart;
     public static ForgeConfigSpec.IntValue curseTimeEnd;
@@ -47,6 +49,10 @@ public class ConfigHandler {
                 .define("cursedSleep.enabled", true);
         curseForSleepChance = builder.comment("Chance to apply a curse when sleeping. [default: 1 = 100%]")
                 .defineInRange("cursedSleep.chance", 1D, 0, 1);
+        sleepsInARow = builder.comment("Number of sleeps in a row to apply a curse after the given sleeping time. Use 1 to disable. [default: 7]")
+                .defineInRange("cursedSleep.row.count", 8, 1, Integer.MAX_VALUE);
+        resetRowOnDeath = builder.comment("Should sleep row being reset on death? [default: false]")
+                .define("cursedSleep.row.reset", false);
         dangeTimesPerNight = builder.comment("The amount of times within the curse time which can be curse the items")
                 .defineInRange("curseTimeAmount", 3, 0, 24000);
         blacklistCurses = builder.comment("Curses in this list will not be applied. You can use * as a wildcard.")
