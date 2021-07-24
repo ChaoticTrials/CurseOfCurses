@@ -1,22 +1,18 @@
 package de.melanx.curseofcurses;
 
-import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.electronwill.nightconfig.core.io.WritingMode;
 import net.minecraftforge.common.ForgeConfigSpec;
 
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
 public class ConfigHandler {
 
-    public static final ForgeConfigSpec SERVER_CONFIG;
-    private static final ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
+    public static final ForgeConfigSpec COMMONG_CONFIG;
+    private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
 
     static {
-        init(SERVER_BUILDER);
-
-        SERVER_CONFIG = SERVER_BUILDER.build();
+        init(COMMON_BUILDER);
+        COMMONG_CONFIG = COMMON_BUILDER.build();
     }
 
     public static ForgeConfigSpec.DoubleValue curseChance;
@@ -57,15 +53,5 @@ public class ConfigHandler {
                 .defineInRange("curseTimeAmount", 3, 0, 24000);
         blacklistCurses = builder.comment("Curses in this list will not be applied. You can use * as a wildcard.")
                 .defineList("blacklistedCurses", Collections.emptyList(), obj -> obj instanceof String);
-    }
-
-    public static void loadConfig(ForgeConfigSpec spec, Path path) {
-        CurseOfCurses.LOGGER.debug("Loading config file {}", path);
-
-        final CommentedFileConfig configData = CommentedFileConfig.builder(path).sync().autosave().writingMode(WritingMode.REPLACE).build();
-
-        configData.load();
-
-        spec.setConfig(configData);
     }
 }

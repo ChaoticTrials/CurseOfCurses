@@ -2,11 +2,11 @@ package de.melanx.curseofcurses;
 
 import de.melanx.curseofcurses.api.CurseUtil;
 import de.melanx.curseofcurses.data.CursedData;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -15,10 +15,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLConfig;
-import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,8 +28,7 @@ public class CurseOfCurses {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public CurseOfCurses() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConfigHandler.SERVER_CONFIG);
-        ConfigHandler.loadConfig(ConfigHandler.SERVER_CONFIG, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()).resolve(MODID + "-server.toml"));
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHandler.COMMONG_CONFIG);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onCommonSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onConfigChange);
         MinecraftForge.EVENT_BUS.register(this);
@@ -41,7 +39,7 @@ public class CurseOfCurses {
         CurseUtil.reloadCurses();
     }
 
-    private void onConfigChange(ModConfig.ModConfigEvent event) {
+    private void onConfigChange(ModConfigEvent event) {
         if (event.getConfig().getModId().equals(MODID)) {
             BlacklistHandler.initBlacklist();
             CurseUtil.reloadCurses();
@@ -50,13 +48,13 @@ public class CurseOfCurses {
 
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        PlayerEntity player = event.player;
-        World world = player.getEntityWorld();
+        Player player = event.player;
+        Level level = player.getCommandSenderWorld();
 
         if (event.phase == TickEvent.Phase.START) {
-            if (!world.isRemote && CursedData.get((ServerWorld) world).getTimes().contains((int) world.getDayTime() % 24000)) {
+            if (!level.isClientSide && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getDayTime() % 24000)) {
                 LOGGER.info("It's dange now.");
-                CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), ConfigHandler.cursePerItem.get());
+                CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), !ConfigHandler.cursePerItem.get());
             }
         }
     }
@@ -64,16 +62,16 @@ public class CurseOfCurses {
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
-            if (event.world.getServer() != null && event.world == event.world.getServer().func_241755_D_() && event.world.getDayTime() % 24000 == 12000) {
-                CursedData.get((ServerWorld) event.world).generateTimes();
+            if (event.world.getServer() != null && event.world == event.world.getServer().overworld() && event.world.getDayTime() % 24000 == 12000) {
+                CursedData.get((ServerLevel) event.world).generateTimes();
             }
         }
     }
 
     @SubscribeEvent
     public void onSleep(PlayerWakeUpEvent event) {
-        if (!event.getEntityLiving().getEntityWorld().isRemote && ConfigHandler.curseForSleep.get()) {
-            ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+        if (!event.getEntityLiving().getCommandSenderWorld().isClientSide && ConfigHandler.curseForSleep.get()) {
+            ServerPlayer player = (ServerPlayer) event.getPlayer();
             CurseUtil.applyCursesRandomly(player, ConfigHandler.curseForSleepChance.get(), ConfigHandler.enchantedCurses.get());
 
             int row = ConfigHandler.sleepsInARow.get();
@@ -81,7 +79,7 @@ public class CurseOfCurses {
                 return;
             }
 
-            CompoundNBT nbt = player.getPersistentData();
+            CompoundTag nbt = player.getPersistentData();
             int i = 1;
             if (nbt.contains("SleepRow")) {
                 i = nbt.getInt("SleepRow") + 1;
@@ -99,11 +97,11 @@ public class CurseOfCurses {
 
     @SubscribeEvent
     public void clonePlayer(PlayerEvent.Clone event) {
-        PlayerEntity newPlayer = event.getPlayer();
-        CompoundNBT newData = newPlayer.getPersistentData();
+        Player newPlayer = event.getPlayer();
+        CompoundTag newData = newPlayer.getPersistentData();
 
-        PlayerEntity oldPlayer = event.getOriginal();
-        CompoundNBT oldData = oldPlayer.getPersistentData();
+        Player oldPlayer = event.getOriginal();
+        CompoundTag oldData = oldPlayer.getPersistentData();
 
         if (!ConfigHandler.resetRowOnDeath.get()) {
             newData.putInt("SleepRow", oldData.getInt("SleepRow"));

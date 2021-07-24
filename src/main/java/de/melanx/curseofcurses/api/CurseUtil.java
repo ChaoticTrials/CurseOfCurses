@@ -2,18 +2,18 @@ package de.melanx.curseofcurses.api;
 
 import de.melanx.curseofcurses.BlacklistHandler;
 import de.melanx.curseofcurses.ConfigHandler;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,36 +29,36 @@ public class CurseUtil {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static boolean canEnchant(Enchantment enchantment, ItemStack stack) {
-        return !(enchantment == null || !enchantment.isCurse() || hasEnchantment(enchantment, stack) || !enchantment.canApply(stack));
+        return !(enchantment == null || !enchantment.isCurse() || hasEnchantment(enchantment, stack) || !enchantment.canEnchant(stack));
     }
 
     private static boolean hasEnchantment(Enchantment enchantment, ItemStack stack) {
-        ListNBT enchantments = stack.getEnchantmentTagList();
+        ListTag enchantments = stack.getEnchantmentTags();
         for (int i = 0; i < enchantments.size(); i++) {
-            CompoundNBT nbt = enchantments.getCompound(i);
+            CompoundTag nbt = enchantments.getCompound(i);
             String resourceLocation = nbt.getString("id");
             if (new ResourceLocation(resourceLocation).equals(enchantment.getRegistryName())) return true;
         }
         return false;
     }
 
-    public static void applyCursesRandomly(PlayerEntity player, double chance) {
+    public static void applyCursesRandomly(Player player, double chance) {
         applyCursesRandomly(player, chance, false, true);
     }
 
-    public static void applyCursesRandomly(PlayerEntity player, double chance, boolean ignoreEnchantments) {
+    public static void applyCursesRandomly(Player player, double chance, boolean ignoreEnchantments) {
         applyCursesRandomly(player, chance, ignoreEnchantments, true);
     }
 
-    public static void applyCursesRandomly(PlayerEntity player, double chance, boolean ignoreEnchantments, boolean oneItemOnly) {
-        PlayerInventory inv = player.inventory;
+    public static void applyCursesRandomly(Player player, double chance, boolean ignoreEnchantments, boolean oneItemOnly) {
+        Inventory inv = player.getInventory();
         List<ItemStack> inventory = new ArrayList<>();
-        inventory.addAll(inv.armorInventory);
-        inventory.addAll(inv.mainInventory);
-        inventory.addAll(inv.offHandInventory);
+        inventory.addAll(inv.armor);
+        inventory.addAll(inv.items);
+        inventory.addAll(inv.offhand);
         Collections.shuffle(inventory);
         for (ItemStack stack : inventory) {
-            if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && (stack.isEnchanted() || ignoreEnchantments) && chance > RANDOM.nextDouble()) {
+            if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && (!stack.isEnchanted() || ignoreEnchantments) && chance > Math.random()) {
                 Enchantment curse = Enchantments.AQUA_AFFINITY;
                 for (int j = 0; j < ConfigHandler.curseAmount.get(); j++) {
                     List<Enchantment> curses1 = new ArrayList<>(CURSES);
@@ -72,9 +72,9 @@ public class CurseUtil {
                         curses1.remove(index);
                     }
                     if (curse != null) {
-                        stack.addEnchantment(curse, curse.getMaxLevel());
-                        player.sendStatusMessage(new TranslationTextComponent("curseofcurses.message", stack.getDisplayName(), curse.getDisplayName(curse.getMaxLevel())), false);
-                        player.playSound(SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.AMBIENT, 0.5F, 0.1F);
+                        stack.enchant(curse, curse.getMaxLevel());
+                        player.displayClientMessage(new TranslatableComponent("curseofcurses.message", stack.getHoverName(), curse.getFullname(curse.getMaxLevel())), false);
+                        player.playNotifySound(SoundEvents.WITHER_AMBIENT, SoundSource.AMBIENT, 0.5F, 0.1F);
                     }
                 }
                 if (curse != null && curse != Enchantments.AQUA_AFFINITY && oneItemOnly) {
@@ -87,6 +87,7 @@ public class CurseUtil {
     public static void reloadCurses() {
         CURSES.clear();
         if (!BlacklistHandler.BLACKLISTED_CURSES.isEmpty()) LOGGER.info("Curses on blacklist: ");
+        //noinspection deprecation
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             if (enchantment.isCurse()) {
                 //noinspection ConstantConditions
