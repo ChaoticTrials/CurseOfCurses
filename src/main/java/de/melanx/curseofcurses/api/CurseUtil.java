@@ -58,7 +58,7 @@ public class CurseUtil {
         inventory.addAll(inv.offHandInventory);
         Collections.shuffle(inventory);
         for (ItemStack stack : inventory) {
-            if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && (stack.isEnchanted() || ignoreEnchantments) && chance > RANDOM.nextDouble()) {
+            if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && (!stack.isEnchanted() || ignoreEnchantments) && chance > Math.random()) {
                 Enchantment curse = Enchantments.AQUA_AFFINITY;
                 for (int j = 0; j < ConfigHandler.curseAmount.get(); j++) {
                     List<Enchantment> curses1 = new ArrayList<>(CURSES);

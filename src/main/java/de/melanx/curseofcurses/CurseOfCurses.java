@@ -56,7 +56,7 @@ public class CurseOfCurses {
         if (event.phase == TickEvent.Phase.START) {
             if (!world.isRemote && CursedData.get((ServerWorld) world).getTimes().contains((int) world.getDayTime() % 24000)) {
                 LOGGER.info("It's dange now.");
-                CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), ConfigHandler.cursePerItem.get());
+                CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), !ConfigHandler.cursePerItem.get());
             }
         }
     }
