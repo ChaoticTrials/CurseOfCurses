@@ -8,7 +8,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class CursedData extends SavedData {
     public CursedData load(@Nonnull CompoundTag nbt) {
         this.possibleTimes.clear();
 
-        for (Tag tag : nbt.getList("CurseTimes", Constants.NBT.TAG_COMPOUND)) {
+        for (Tag tag : nbt.getList("CurseTimes", Tag.TAG_COMPOUND)) {
             int time = ((CompoundTag) tag).getInt("Time");
             this.possibleTimes.add(time);
         }
