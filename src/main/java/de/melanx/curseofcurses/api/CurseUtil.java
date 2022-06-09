@@ -5,7 +5,7 @@ import de.melanx.curseofcurses.ConfigHandler;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +38,8 @@ public class CurseUtil {
         for (int i = 0; i < enchantments.size(); i++) {
             CompoundTag nbt = enchantments.getCompound(i);
             String resourceLocation = nbt.getString("id");
-            if (new ResourceLocation(resourceLocation).equals(enchantment.getRegistryName())) return true;
+            if (new ResourceLocation(resourceLocation).equals(ForgeRegistries.ENCHANTMENTS.getKey(enchantment)))
+                return true;
         }
         return false;
     }
@@ -73,7 +75,7 @@ public class CurseUtil {
                     }
                     if (curse != null) {
                         stack.enchant(curse, curse.getMaxLevel());
-                        player.displayClientMessage(new TranslatableComponent("curseofcurses.message", stack.getHoverName(), curse.getFullname(curse.getMaxLevel())), false);
+                        player.displayClientMessage(Component.translatable("curseofcurses.message", stack.getHoverName(), curse.getFullname(curse.getMaxLevel())), false);
                         player.playNotifySound(SoundEvents.WITHER_AMBIENT, SoundSource.AMBIENT, 0.5F, 0.1F);
                     }
                 }
@@ -91,10 +93,11 @@ public class CurseUtil {
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             if (enchantment.isCurse()) {
                 //noinspection ConstantConditions
-                if (!BlacklistHandler.BLACKLISTED_CURSES.contains(enchantment.getRegistryName().toString())) {
+                if (!BlacklistHandler.BLACKLISTED_CURSES.contains(ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString())) {
                     CURSES.add(enchantment);
                 } else {
-                    LOGGER.info(enchantment.getRegistryName().toString());
+                    //noinspection ConstantConditions
+                    LOGGER.info(ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString());
                 }
             }
         }

@@ -22,8 +22,9 @@ public class BlacklistHandler {
                 for (int k = 0; k < ForgeRegistries.ENCHANTMENTS.getKeys().size(); k++) {
                     Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue((ResourceLocation) ForgeRegistries.ENCHANTMENTS.getKeys().toArray()[k]);
                     //noinspection ConstantConditions
-                    if (enchantment != null && enchantment.isCurse() && enchantment.getRegistryName().toString().matches(regex.pattern())) {
-                        BLACKLISTED_CURSES.add(enchantment.getRegistryName().toString());
+                    if (enchantment != null && enchantment.isCurse() && ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString().matches(regex.pattern())) {
+                        //noinspection ConstantConditions
+                        BLACKLISTED_CURSES.add(ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString());
                     }
                 }
             } else {
