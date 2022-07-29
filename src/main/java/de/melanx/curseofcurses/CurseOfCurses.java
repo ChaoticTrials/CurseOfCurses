@@ -60,18 +60,18 @@ public class CurseOfCurses {
     }
 
     @SubscribeEvent
-    public void onWorldTick(TickEvent.WorldTickEvent event) {
+    public void onWorldTick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
-            if (event.world.getServer() != null && event.world == event.world.getServer().overworld() && event.world.getDayTime() % 24000 == 12000) {
-                CursedData.get((ServerLevel) event.world).generateTimes();
+            if (event.level.getServer() != null && event.level == event.level.getServer().overworld() && event.level.getDayTime() % 24000 == 12000) {
+                CursedData.get((ServerLevel) event.level).generateTimes();
             }
         }
     }
 
     @SubscribeEvent
     public void onSleep(PlayerWakeUpEvent event) {
-        if (!event.getEntityLiving().getCommandSenderWorld().isClientSide && ConfigHandler.curseForSleep.get()) {
-            ServerPlayer player = (ServerPlayer) event.getPlayer();
+        if (!event.getEntity().getCommandSenderWorld().isClientSide && ConfigHandler.curseForSleep.get()) {
+            ServerPlayer player = (ServerPlayer) event.getEntity();
             CurseUtil.applyCursesRandomly(player, ConfigHandler.curseForSleepChance.get(), ConfigHandler.enchantedCurses.get());
 
             int row = ConfigHandler.sleepsInARow.get();
@@ -97,7 +97,7 @@ public class CurseOfCurses {
 
     @SubscribeEvent
     public void clonePlayer(PlayerEvent.Clone event) {
-        Player newPlayer = event.getPlayer();
+        Player newPlayer = event.getEntity();
         CompoundTag newData = newPlayer.getPersistentData();
 
         Player oldPlayer = event.getOriginal();
