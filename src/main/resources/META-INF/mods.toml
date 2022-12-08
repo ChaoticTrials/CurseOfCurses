@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[42,)"
+loaderVersion = "[44,)"
 issueTrackerURL = "https://www.github.com/MelanX/curse-of-curses/issues/"
 license="MIT License"
 
@@ -18,13 +18,13 @@ A mod which applies a random curse with a configurable chance each night to a ra
 [[dependencies.curseofcurses]]
     modId="forge"
     mandatory = true
-    versionRange = "[42,)"
+    versionRange = "[44,)"
     ordering = "NONE"
     side="BOTH"
 
 [[dependencies.curseofcurses]]
     modId="minecraft"
     mandatory = true
-    versionRange = "[1.19.1, 1.20)"
+    versionRange = "[1.19.3, 1.20)"
     ordering = "NONE"
     side="BOTH"

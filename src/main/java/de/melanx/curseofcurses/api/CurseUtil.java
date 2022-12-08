@@ -2,7 +2,7 @@ package de.melanx.curseofcurses.api;
 
 import de.melanx.curseofcurses.BlacklistHandler;
 import de.melanx.curseofcurses.ConfigHandler;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -90,7 +90,7 @@ public class CurseUtil {
         CURSES.clear();
         if (!BlacklistHandler.BLACKLISTED_CURSES.isEmpty()) LOGGER.info("Curses on blacklist: ");
         //noinspection deprecation
-        for (Enchantment enchantment : Registry.ENCHANTMENT) {
+        for (Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
             if (enchantment.isCurse()) {
                 //noinspection ConstantConditions
                 if (!BlacklistHandler.BLACKLISTED_CURSES.contains(ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString())) {
