@@ -5,5 +5,5 @@ inventory.
 [![CurseForge](http://cf.way2muchnoise.eu/full_382881_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/curse-of-curses)
 [![Curseforge](http://cf.way2muchnoise.eu/versions/For%20MC_382881_all.svg)](https://www.curseforge.com/minecraft/mc-mods/curse-of-curses)
 
-[![Modrinth](https://modrinth-utils.vercel.app/api/badge/versions?id=HMcaBYVS&logo=true)](https://modrinth.com/mod/curse-of-curses)
-[![Modrinth](https://modrinth-utils.vercel.app/api/badge/downloads?id=HMcaBYVS&logo=true)](https://modrinth.com/mod/curse-of-curses)
+[![Modrinth](https://img.shields.io/modrinth/game-versions/No1xZeN1?color=00AF5C&label=modrinth&logo=modrinth)](https://modrinth.com/mod/data-trader)
+[![Modrinth](https://img.shields.io/modrinth/dt/No1xZeN1?color=00AF5C&logo=modrinth)](https://modrinth.com/mod/data-trader)
