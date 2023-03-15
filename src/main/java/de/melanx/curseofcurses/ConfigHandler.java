@@ -26,7 +26,7 @@ public class ConfigHandler {
     public static ForgeConfigSpec.IntValue curseTimeStart;
     public static ForgeConfigSpec.IntValue curseTimeEnd;
     public static ForgeConfigSpec.IntValue dangeTimesPerNight;
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistCurses;
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> denylistCurses;
 
     public static void init(ForgeConfigSpec.Builder builder) {
         curseChance = builder.comment("The chance for applying an curse enchantment to an item at midnight. [Default: 0.01 = 1%]")
@@ -51,7 +51,7 @@ public class ConfigHandler {
                 .define("cursedSleep.row.reset", false);
         dangeTimesPerNight = builder.comment("The amount of times within the curse time which can be curse the items")
                 .defineInRange("curseTimeAmount", 3, 0, 24000);
-        blacklistCurses = builder.comment("Curses in this list will not be applied. You can use * as a wildcard.")
-                .defineList("blacklistedCurses", Collections.emptyList(), obj -> obj instanceof String);
+        denylistCurses = builder.comment("Curses in this list will not be applied. You can use * as a wildcard.")
+                .defineList("denylistedCurses", Collections.emptyList(), obj -> obj instanceof String);
     }
 }

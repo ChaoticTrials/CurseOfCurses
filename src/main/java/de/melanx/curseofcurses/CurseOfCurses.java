@@ -35,13 +35,13 @@ public class CurseOfCurses {
     }
 
     private void onCommonSetup(FMLCommonSetupEvent event) {
-        BlacklistHandler.initBlacklist();
+        DenylistHandler.initDenylist();
         CurseUtil.reloadCurses();
     }
 
     private void onConfigChange(ModConfigEvent event) {
         if (event.getConfig().getModId().equals(MODID)) {
-            BlacklistHandler.initBlacklist();
+            DenylistHandler.initDenylist();
             CurseUtil.reloadCurses();
         }
     }

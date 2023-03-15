@@ -1,7 +1,7 @@
 package de.melanx.curseofcurses.api;
 
-import de.melanx.curseofcurses.BlacklistHandler;
 import de.melanx.curseofcurses.ConfigHandler;
+import de.melanx.curseofcurses.DenylistHandler;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -88,12 +88,12 @@ public class CurseUtil {
 
     public static void reloadCurses() {
         CURSES.clear();
-        if (!BlacklistHandler.BLACKLISTED_CURSES.isEmpty()) LOGGER.info("Curses on blacklist: ");
+        if (!DenylistHandler.DENYLISTED_CURSES.isEmpty()) LOGGER.info("Curses on denylist: ");
         //noinspection deprecation
         for (Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
             if (enchantment.isCurse()) {
                 //noinspection ConstantConditions
-                if (!BlacklistHandler.BLACKLISTED_CURSES.contains(ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString())) {
+                if (!DenylistHandler.DENYLISTED_CURSES.contains(ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString())) {
                     CURSES.add(enchantment);
                 } else {
                     //noinspection ConstantConditions
