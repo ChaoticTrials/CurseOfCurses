@@ -1,34 +1,34 @@
 package de.melanx.curseofcurses;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Collections;
 import java.util.List;
 
 public class ConfigHandler {
 
-    public static final ForgeConfigSpec COMMONG_CONFIG;
-    private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
+    public static final ModConfigSpec COMMONG_CONFIG;
+    private static final ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
 
     static {
         init(COMMON_BUILDER);
         COMMONG_CONFIG = COMMON_BUILDER.build();
     }
 
-    public static ForgeConfigSpec.DoubleValue curseChance;
-    public static ForgeConfigSpec.BooleanValue cursePerItem;
-    public static ForgeConfigSpec.BooleanValue enchantedCurses;
-    public static ForgeConfigSpec.BooleanValue curseForSleep;
-    public static ForgeConfigSpec.DoubleValue curseForSleepChance;
-    public static ForgeConfigSpec.IntValue sleepsInARow;
-    public static ForgeConfigSpec.BooleanValue resetRowOnDeath;
-    public static ForgeConfigSpec.IntValue curseAmount;
-    public static ForgeConfigSpec.IntValue curseTimeStart;
-    public static ForgeConfigSpec.IntValue curseTimeEnd;
-    public static ForgeConfigSpec.IntValue dangeTimesPerNight;
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> denylistCurses;
+    public static ModConfigSpec.DoubleValue curseChance;
+    public static ModConfigSpec.BooleanValue cursePerItem;
+    public static ModConfigSpec.BooleanValue enchantedCurses;
+    public static ModConfigSpec.BooleanValue curseForSleep;
+    public static ModConfigSpec.DoubleValue curseForSleepChance;
+    public static ModConfigSpec.IntValue sleepsInARow;
+    public static ModConfigSpec.BooleanValue resetRowOnDeath;
+    public static ModConfigSpec.IntValue curseAmount;
+    public static ModConfigSpec.IntValue curseTimeStart;
+    public static ModConfigSpec.IntValue curseTimeEnd;
+    public static ModConfigSpec.IntValue dangeTimesPerNight;
+    public static ModConfigSpec.ConfigValue<List<? extends String>> denylistCurses;
 
-    public static void init(ForgeConfigSpec.Builder builder) {
+    public static void init(ModConfigSpec.Builder builder) {
         curseChance = builder.comment("The chance for applying an curse enchantment to an item at midnight. [Default: 0.01 = 1%]")
                 .defineInRange("chance.percentage", 0.01, 0, 1);
         cursePerItem = builder.comment("If set to true, each item will be checked to get cursed. Else it will stop after the first cursed item. [Default: false]")

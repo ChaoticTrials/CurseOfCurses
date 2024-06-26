@@ -7,17 +7,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,44 +25,26 @@ public class CurseOfCurses {
     public static final String MODID = "curseofcurses";
     public static final Logger LOGGER = LoggerFactory.getLogger(CurseOfCurses.class);
 
-    public CurseOfCurses() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHandler.COMMONG_CONFIG);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onCommonSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onConfigChange);
-        MinecraftForge.EVENT_BUS.register(this);
+    public CurseOfCurses(ModContainer modContainer) {
+        modContainer.registerConfig(ModConfig.Type.COMMON, ConfigHandler.COMMONG_CONFIG);
+        NeoForge.EVENT_BUS.register(this);
     }
 
-    private void onCommonSetup(FMLCommonSetupEvent event) {
-        DenylistHandler.initDenylist();
-        CurseUtil.reloadCurses();
-    }
+    @SubscribeEvent
+    public void onPlayerTick(PlayerTickEvent.Pre event) {
+        Player player = event.getEntity();
+        Level level = player.level();
 
-    private void onConfigChange(ModConfigEvent event) {
-        if (event.getConfig().getModId().equals(MODID)) {
-            DenylistHandler.initDenylist();
-            CurseUtil.reloadCurses();
+        if (!level.isClientSide && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getDayTime() % 24000)) {
+            LOGGER.info("It's dange now.");
+            CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), !ConfigHandler.cursePerItem.get());
         }
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        Player player = event.player;
-        Level level = player.getCommandSenderWorld();
-
-        if (event.phase == TickEvent.Phase.START) {
-            if (!level.isClientSide && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getDayTime() % 24000)) {
-                LOGGER.info("It's dange now.");
-                CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), !ConfigHandler.cursePerItem.get());
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onWorldTick(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            if (event.level.getServer() != null && event.level == event.level.getServer().overworld() && event.level.getDayTime() % 24000 == 12000) {
-                CursedData.get((ServerLevel) event.level).generateTimes();
-            }
+    public void onWorldTick(LevelTickEvent.Pre event) {
+        if (event.getLevel().getServer() != null && event.getLevel() == event.getLevel().getServer().overworld() && event.getLevel().getDayTime() % 24000 == 12000) {
+            CursedData.get((ServerLevel) event.getLevel()).generateTimes();
         }
     }
 

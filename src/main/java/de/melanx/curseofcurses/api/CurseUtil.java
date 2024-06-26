@@ -1,47 +1,34 @@
 package de.melanx.curseofcurses.api;
 
 import de.melanx.curseofcurses.ConfigHandler;
-import de.melanx.curseofcurses.DenylistHandler;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class CurseUtil {
 
     public static final Random RANDOM = new Random();
-    private static final List<Enchantment> CURSES = new ArrayList<>();
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static boolean canEnchant(Enchantment enchantment, ItemStack stack) {
-        return !(enchantment == null || !enchantment.isCurse() || hasEnchantment(enchantment, stack) || !enchantment.canEnchant(stack));
+    public static boolean canEnchant(Optional<Holder.Reference<Enchantment>> enchantment, ItemStack stack) {
+        return !(enchantment.isEmpty() || !enchantment.get().isBound() || !enchantment.get().is(EnchantmentTags.CURSE) || hasEnchantment(enchantment.get(), stack) || enchantment.get().value().canEnchant(stack));
     }
 
-    private static boolean hasEnchantment(Enchantment enchantment, ItemStack stack) {
-        ListTag enchantments = stack.getEnchantmentTags();
-        for (int i = 0; i < enchantments.size(); i++) {
-            CompoundTag nbt = enchantments.getCompound(i);
-            String resourceLocation = nbt.getString("id");
-            if (new ResourceLocation(resourceLocation).equals(ForgeRegistries.ENCHANTMENTS.getKey(enchantment)))
-                return true;
-        }
-        return false;
+    private static boolean hasEnchantment(Holder<Enchantment> enchantment, ItemStack stack) {
+        return stack.getTagEnchantments().keySet().contains(enchantment);
     }
 
     public static void applyCursesRandomly(Player player, double chance) {
@@ -59,48 +46,34 @@ public class CurseUtil {
         inventory.addAll(inv.items);
         inventory.addAll(inv.offhand);
         Collections.shuffle(inventory);
+        Registry<Enchantment> enchantments = player.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
         for (ItemStack stack : inventory) {
             if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && (!stack.isEnchanted() || ignoreEnchantments) && chance > Math.random()) {
-                Enchantment curse = Enchantments.AQUA_AFFINITY;
+                Optional<Holder.Reference<Enchantment>> curse = Optional.empty();
                 for (int j = 0; j < ConfigHandler.curseAmount.get(); j++) {
-                    List<Enchantment> curses1 = new ArrayList<>(CURSES);
+                    List<ResourceLocation> curses = new ArrayList<>(enchantments.keySet());
                     while (!CurseUtil.canEnchant(curse, stack)) {
-                        if (curses1.isEmpty()) {
-                            curse = null;
+                        if (curses.isEmpty()) {
+                            curse = Optional.empty();
                             break;
                         }
-                        int index = RANDOM.nextInt(curses1.size());
-                        curse = curses1.get(index);
-                        curses1.remove(index);
+
+                        int index = RANDOM.nextInt(curses.size());
+                        curse = enchantments.getHolder(curses.get(index));
+                        curses.remove(index);
                     }
-                    if (curse != null) {
-                        stack.enchant(curse, curse.getMaxLevel());
-                        player.displayClientMessage(Component.translatable("curseofcurses.message", stack.getHoverName(), curse.getFullname(curse.getMaxLevel())), false);
+
+                    curse.ifPresent(enchantment -> {
+                        stack.enchant(enchantment, enchantment.value().getMaxLevel());
+                        player.displayClientMessage(Component.translatable("curseofcurses.message", stack.getHoverName(), Enchantment.getFullname(enchantment, enchantment.value().getMaxLevel())), false);
                         player.playNotifySound(SoundEvents.WITHER_AMBIENT, SoundSource.AMBIENT, 0.5F, 0.1F);
-                    }
+                    });
                 }
-                if (curse != null && curse != Enchantments.AQUA_AFFINITY && oneItemOnly) {
+
+                if (curse.isPresent() && oneItemOnly) {
                     break;
                 }
             }
         }
-    }
-
-    public static void reloadCurses() {
-        CURSES.clear();
-        if (!DenylistHandler.DENYLISTED_CURSES.isEmpty()) LOGGER.info("Curses on denylist: ");
-        //noinspection deprecation
-        for (Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
-            if (enchantment.isCurse()) {
-                //noinspection ConstantConditions
-                if (!DenylistHandler.DENYLISTED_CURSES.contains(ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString())) {
-                    CURSES.add(enchantment);
-                } else {
-                    //noinspection ConstantConditions
-                    LOGGER.info(ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString());
-                }
-            }
-        }
-        LOGGER.info(CURSES.size() + " curses loaded.");
     }
 }
