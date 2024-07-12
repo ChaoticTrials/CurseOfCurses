@@ -27,7 +27,7 @@ public class CursedData extends SavedData {
     }
 
     public static SavedData.Factory<CursedData> factory(ServerLevel level) {
-        return new SavedData.Factory<>(() -> new CursedData(level), (nbt, provider) -> CursedData.get(level).load(nbt));
+        return new SavedData.Factory<>(() -> new CursedData(level), (nbt, provider) -> CursedData.load(level, nbt));
     }
 
     public static CursedData get(ServerLevel level) {
@@ -35,15 +35,16 @@ public class CursedData extends SavedData {
         return storage.computeIfAbsent(CursedData.factory(level), NAME);
     }
 
-    public CursedData load(@Nonnull CompoundTag nbt) {
-        this.possibleTimes.clear();
+    private static CursedData load(ServerLevel level, @Nonnull CompoundTag nbt) {
+        CursedData data = new CursedData(level);
+        data.possibleTimes.clear();
 
         for (Tag tag : nbt.getList("CurseTimes", Tag.TAG_COMPOUND)) {
             int time = ((CompoundTag) tag).getInt("Time");
-            this.possibleTimes.add(time);
+            data.possibleTimes.add(time);
         }
 
-        return this;
+        return data;
     }
 
     public List<Integer> getTimes() {
