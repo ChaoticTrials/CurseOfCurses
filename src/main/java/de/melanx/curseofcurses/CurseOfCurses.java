@@ -52,7 +52,7 @@ public class CurseOfCurses {
         Level level = player.getCommandSenderWorld();
 
         if (event.phase == TickEvent.Phase.START) {
-            if (!level.isClientSide && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getDayTime() % 24000)) {
+            if (!level.isClientSide && ConfigHandler.cooldownSetting.get().test(level.getMoonPhase()) && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getDayTime() % 24000)) {
                 LOGGER.info("It's dange now.");
                 CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), !ConfigHandler.cursePerItem.get());
             }
@@ -61,10 +61,12 @@ public class CurseOfCurses {
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            if (event.level.getServer() != null && event.level == event.level.getServer().overworld() && event.level.getDayTime() % 24000 == 12000) {
-                CursedData.get((ServerLevel) event.level).generateTimes();
-            }
+        if (event.phase == TickEvent.Phase.START
+                && event.level instanceof ServerLevel level
+                && level == level.getServer().overworld()
+                && ConfigHandler.cooldownSetting.get().test(level.getMoonPhase() - 1)
+                && level.getDayTime() % 24000 == 12000) {
+            CursedData.get(level).generateTimes();
         }
     }
 
