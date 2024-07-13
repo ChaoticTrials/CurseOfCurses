@@ -4,6 +4,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class ConfigHandler {
 
@@ -26,6 +27,7 @@ public class ConfigHandler {
     public static ForgeConfigSpec.IntValue curseTimeStart;
     public static ForgeConfigSpec.IntValue curseTimeEnd;
     public static ForgeConfigSpec.IntValue dangeTimesPerNight;
+    public static ForgeConfigSpec.EnumValue<CooldownSetting> cooldownSetting;
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> denylistCurses;
 
     public static void init(ForgeConfigSpec.Builder builder) {
@@ -51,7 +53,25 @@ public class ConfigHandler {
                 .define("cursedSleep.row.reset", false);
         dangeTimesPerNight = builder.comment("The amount of times within the curse time which can be curse the items")
                 .defineInRange("curseTimeAmount", 3, 0, 24000);
+        cooldownSetting = builder.comment("In which type of nights should curses be applied")
+                .defineEnum("cooldownSetting", CooldownSetting.EVERY_NIGHT);
         denylistCurses = builder.comment("Curses in this list will not be applied. You can use * as a wildcard.")
                 .defineList("denylistedCurses", Collections.emptyList(), obj -> obj instanceof String);
+    }
+
+    public enum CooldownSetting {
+        EVERY_NIGHT(i -> true),
+        FULL_MOON(i -> i == 0),
+        NEW_MOON(i -> i == 4);
+
+        private final Predicate<Integer> predicate;
+
+        CooldownSetting(Predicate<Integer> predicate) {
+            this.predicate = predicate;
+        }
+
+        public boolean test(int value) {
+            return this.predicate.test(value % 8);
+        }
     }
 }
