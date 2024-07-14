@@ -5,7 +5,7 @@ license="MIT License"
 
 [[mods]]
 modId="curseofcurses"
-version="${file.jarVersion}"
+version="${version}"
 displayName="Curse of Curses"
 updateJSONURL="https://assets.melanx.de/updates/curse-of-curses.json"
 displayURL="www.curseforge.com/members/melanx/"
