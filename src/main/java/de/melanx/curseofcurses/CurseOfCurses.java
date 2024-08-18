@@ -74,7 +74,6 @@ public class CurseOfCurses {
     public void onSleep(PlayerWakeUpEvent event) {
         if (!event.getEntity().getCommandSenderWorld().isClientSide && ConfigHandler.curseForSleep.get()) {
             ServerPlayer player = (ServerPlayer) event.getEntity();
-            CurseUtil.applyCursesRandomly(player, ConfigHandler.curseForSleepChance.get(), ConfigHandler.enchantedCurses.get());
 
             int row = ConfigHandler.sleepsInARow.get();
             if (row == 1) {
