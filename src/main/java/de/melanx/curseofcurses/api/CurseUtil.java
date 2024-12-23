@@ -46,9 +46,9 @@ public class CurseUtil {
         inventory.addAll(inv.items);
         inventory.addAll(inv.offhand);
         Collections.shuffle(inventory);
-        Registry<Enchantment> enchantments = player.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+        Registry<Enchantment> enchantments = player.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         for (ItemStack stack : inventory) {
-            if (!stack.isEmpty() && stack.getItem().isEnchantable(stack) && (!stack.isEnchanted() || ignoreEnchantments) && chance > Math.random()) {
+            if (!stack.isEmpty() && stack.isEnchantable() && (!stack.isEnchanted() || ignoreEnchantments) && chance > Math.random()) {
                 Optional<Holder.Reference<Enchantment>> curse = Optional.empty();
                 for (int j = 0; j < ConfigHandler.curseAmount.get(); j++) {
                     List<ResourceLocation> curses = new ArrayList<>(enchantments.keySet());
@@ -59,7 +59,7 @@ public class CurseUtil {
                         }
 
                         int index = RANDOM.nextInt(curses.size());
-                        curse = enchantments.getHolder(curses.get(index));
+                        curse = enchantments.get(curses.get(index));
                         curses.remove(index);
                     }
 
