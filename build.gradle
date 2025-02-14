@@ -38,6 +38,11 @@ mod.configure {
         return filteredChangelog
     }
 
+    artifacts {
+        sources {
+            publishToRepositories()
+        }
+    }
 
     publishing {
         maven {
