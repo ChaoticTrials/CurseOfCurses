@@ -1,3 +1,28 @@
 {
-  "curseofcurses.message": "Something has cursed your %s with %s. You feel a sense of foreboding."
+  "curseofcurses.message": "Something has cursed your %s with %s. You feel a sense of foreboding.",
+
+  "curseofcurses.configuration.enchantedItems": "Allow Curses on Non-Enchanted Items",
+  "curseofcurses.configuration.curseTimeAmount": "Curse Attempts Per Night",
+  "curseofcurses.configuration.curseTime": "Curse Activation Time",
+  "curseofcurses.configuration.denylistedCurses": "Denylisted Curses",
+  "curseofcurses.configuration.chance": "Curse Chance",
+  "curseofcurses.configuration.curseAmount": "Number of Curses",
+  "curseofcurses.configuration.cursedSleep": "Sleep-Induced Curses",
+  "curseofcurses.configuration.cooldownSetting": "Curse Cooldown Setting",
+  "curseofcurses.configuration.curseTime.tooltip": "Time range during which curse application can occur.",
+  "curseofcurses.configuration.curseTimeAmount.tooltip": "The maximum number of curse attempts per night.",
+  "curseofcurses.configuration.curseTime.button": "Set Curse Time",
+  "curseofcurses.configuration.denylistedCurses.button": "Modify Denylist",
+  "curseofcurses.configuration.denylistedCurses.tooltip": "Curses in this list will not be applied. Supports wildcards (*).",
+  "curseofcurses.configuration.chance.tooltip": "Chance for an item to be cursed at midnight. Value between 0 and 1.",
+  "curseofcurses.configuration.curseAmount.tooltip": "The number of curses to apply during curse time.",
+  "curseofcurses.configuration.section.curseofcurses.common.toml": "General Configuration",
+  "curseofcurses.configuration.cooldownSetting.tooltip": "Determines which types of nights allow curse application.",
+  "curseofcurses.configuration.cursedSleep.button": "Configure Sleep Curses",
+  "curseofcurses.configuration.cursedSleep.tooltip": "Settings related to curses applied when skipping the night.",
+  "curseofcurses.configuration.title": "Curse Of Curses",
+  "curseofcurses.configuration.enchantedItems.tooltip": "When enabled, cursed enchantments can also be applied to items without other enchantments.",
+  "curseofcurses.configuration.section.curseofcurses.common.toml.title": "Common Configuration",
+  "curseofcurses.configuration.chance.button": "Edit Curse Chance"
+
 }

@@ -56,7 +56,7 @@ public class ConfigHandler {
         cooldownSetting = builder.comment("In which type of nights should curses be applied")
                 .defineEnum("cooldownSetting", CooldownSetting.EVERY_NIGHT);
         denylistCurses = builder.comment("Curses in this list will not be applied. You can use * as a wildcard.")
-                .defineList("denylistedCurses", Collections.emptyList(), obj -> obj instanceof String);
+                .defineList("denylistedCurses", Collections.emptyList(), () -> "minecraft:*", obj -> obj instanceof String);
     }
 
     public enum CooldownSetting {

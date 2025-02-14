@@ -1,3 +1,27 @@
 {
-  "curseofcurses.message": "Etwas hat %s mit %s belegt. Dir läuft ein eiskalter Schauer den Rücken hinunter."
+  "curseofcurses.message": "Etwas hat %s mit %s belegt. Dir läuft ein eiskalter Schauer den Rücken hinunter.",
+
+  "curseofcurses.configuration.enchantedItems": "Flüche auf nicht verzauberten Gegenständen zulassen",
+  "curseofcurses.configuration.curseTimeAmount": "Fluchversuche pro Nacht",
+  "curseofcurses.configuration.curseTime": "Zeitraum für Fluchaktivierung",
+  "curseofcurses.configuration.denylistedCurses": "Ignorierte Flüche",
+  "curseofcurses.configuration.chance": "Fluchchance",
+  "curseofcurses.configuration.curseAmount": "Anzahl der Flüche",
+  "curseofcurses.configuration.cursedSleep": "Flüche durch Schlaf",
+  "curseofcurses.configuration.cooldownSetting": "Fluch-Wiederholungsmodus",
+  "curseofcurses.configuration.curseTime.tooltip": "Zeitraum, in dem Flüche angewendet werden können.",
+  "curseofcurses.configuration.curseTimeAmount.tooltip": "Maximale Anzahl der Fluchversuche während der Nacht.",
+  "curseofcurses.configuration.curseTime.button": "Zeitraum einstellen",
+  "curseofcurses.configuration.denylistedCurses.button": "Ignorierliste ändern",
+  "curseofcurses.configuration.denylistedCurses.tooltip": "Flüche in dieser Liste werden nicht angewendet. Unterstützt Platzhalter (*)",
+  "curseofcurses.configuration.chance.tooltip": "Chance, dass ein Gegenstand um Mitternacht verflucht wird. Wert zwischen 0 und 1.",
+  "curseofcurses.configuration.curseAmount.tooltip": "Anzahl der Flüche, die während der Fluchzeit angewendet werden.",
+  "curseofcurses.configuration.section.curseofcurses.common.toml": "Allgemeine Konfiguration",
+  "curseofcurses.configuration.cooldownSetting.tooltip": "Legt fest, in welchen Nächten Flüche angewendet werden.",
+  "curseofcurses.configuration.cursedSleep.button": "Schlafflüche konfigurieren",
+  "curseofcurses.configuration.cursedSleep.tooltip": "Einstellungen für Flüche, die beim Überspringen der Nacht angewendet werden.",
+  "curseofcurses.configuration.title": "Curse Of Curses",
+  "curseofcurses.configuration.enchantedItems.tooltip": "Wenn aktiviert, können verfluchte Verzauberungen auch auf Gegenstände ohne andere Verzauberungen angewendet werden.",
+  "curseofcurses.configuration.section.curseofcurses.common.toml.title": "Gemeinsame Konfiguration",
+  "curseofcurses.configuration.chance.button": "Fluchchance bearbeiten"
 }
