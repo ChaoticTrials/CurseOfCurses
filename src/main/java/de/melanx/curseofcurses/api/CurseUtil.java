@@ -5,7 +5,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EnchantmentTags;
@@ -23,8 +22,8 @@ public class CurseUtil {
     public static final Random RANDOM = new Random();
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static boolean canEnchant(Optional<Holder.Reference<Enchantment>> enchantment, ItemStack stack) {
-        return !(enchantment.isEmpty() || !enchantment.get().isBound() || !enchantment.get().is(EnchantmentTags.CURSE) || hasEnchantment(enchantment.get(), stack) || enchantment.get().value().canEnchant(stack));
+    public static boolean canEnchant(Optional<Holder<Enchantment>> enchantment, ItemStack stack) {
+        return enchantment.isPresent() && enchantment.get().isBound() && enchantment.get().is(EnchantmentTags.CURSE) && !hasEnchantment(enchantment.get(), stack) && stack.supportsEnchantment(enchantment.get());
     }
 
     private static boolean hasEnchantment(Holder<Enchantment> enchantment, ItemStack stack) {
@@ -41,26 +40,32 @@ public class CurseUtil {
 
     public static void applyCursesRandomly(Player player, double chance, boolean ignoreEnchantments, boolean oneItemOnly) {
         Inventory inv = player.getInventory();
-        List<ItemStack> inventory = new ArrayList<>();
-        inventory.addAll(inv.armor);
-        inventory.addAll(inv.items);
-        inventory.addAll(inv.offhand);
+        List<ItemStack> inventory = new ArrayList<>(inv.getNonEquipmentItems());
+        Inventory.EQUIPMENT_SLOT_MAPPING.keySet().forEach(slot -> inventory.add(inv.getItem(slot)));
         Collections.shuffle(inventory);
+
         Registry<Enchantment> enchantments = player.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+        List<Holder<Enchantment>> curses = new ArrayList<>();
+        for (Holder<Enchantment> enchantmentHolder : enchantments.asHolderIdMap()) {
+            if (enchantmentHolder.is(EnchantmentTags.CURSE)) {
+                curses.add(enchantmentHolder);
+            }
+        }
         for (ItemStack stack : inventory) {
             if (!stack.isEmpty() && stack.isEnchantable() && (!stack.isEnchanted() || ignoreEnchantments) && chance > Math.random()) {
-                Optional<Holder.Reference<Enchantment>> curse = Optional.empty();
+                Optional<Holder<Enchantment>> curse = Optional.empty();
                 for (int j = 0; j < ConfigHandler.curseAmount.get(); j++) {
-                    List<ResourceLocation> curses = new ArrayList<>(enchantments.keySet());
+                    List<Holder<Enchantment>> toCheck = new ArrayList<>(curses);
+                    Collections.shuffle(toCheck);
                     while (!CurseUtil.canEnchant(curse, stack)) {
-                        if (curses.isEmpty()) {
+                        if (toCheck.isEmpty()) {
                             curse = Optional.empty();
                             break;
                         }
 
-                        int index = RANDOM.nextInt(curses.size());
-                        curse = enchantments.get(curses.get(index));
-                        curses.remove(index);
+                        int index = RANDOM.nextInt(toCheck.size());
+                        curse = Optional.of(toCheck.get(index));
+                        toCheck.remove(index);
                     }
 
                     curse.ifPresent(enchantment -> {

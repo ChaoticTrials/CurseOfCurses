@@ -1,5 +1,5 @@
 plugins {
-    id 'org.moddingx.modgradle.meta' version '5.0.2'
+    id 'org.moddingx.modgradle.meta' version '5.0.3'
 }
 
 repositories {
@@ -10,8 +10,7 @@ repositories {
 }
 
 var dev = System.getenv('IS_DEV')?.toBoolean() ?: false
-var baseVersion = '21.3'
-var modBaseVersion = '1.21.3-6.0'
+var baseVersion = '21.5'
 
 mod.configure {
     modid 'curseofcurses'
@@ -21,12 +20,12 @@ mod.configure {
             def gitCommitHash = ['git', 'rev-parse', 'HEAD'].execute().text.trim()
             constant baseVersion + (gitCommitHash ? "-${gitCommitHash}" : '')
         } else {
-            base modBaseVersion
+            base baseVersion
             maven 'https://maven.melanx.de/release'
         }
     }
 
-    neoforge project.hasProperty('neo_version') ? project.neo_version : "${baseVersion}.63"
+    neoforge project.hasProperty('neo_version') ? project.neo_version : "${baseVersion}.0-beta"
 
     license 'MIT License'
     github 'ChaoticTrials/CurseOfCurses'
@@ -55,8 +54,7 @@ mod.configure {
     upload {
         all {
             type 'beta'
-            version '1.21.3'
-            version '1.21.4'
+            version '1.21.5'
         }
         curseforge {
             projectId 382881

@@ -62,13 +62,8 @@ public class CurseOfCurses {
             }
 
             CompoundTag nbt = player.getPersistentData();
-            int i = 1;
-            if (nbt.contains("SleepRow")) {
-                i = nbt.getInt("SleepRow") + 1;
-                nbt.putInt("SleepRow", i);
-            } else {
-                nbt.putInt("SleepRow", 1);
-            }
+            int i = nbt.getIntOr("SleepRow", 0) + 1;
+            nbt.putInt("SleepRow", i);
 
             if (i >= ConfigHandler.sleepsInARow.get()) {
                 nbt.putInt("SleepRow", 0);
@@ -86,7 +81,7 @@ public class CurseOfCurses {
         CompoundTag oldData = oldPlayer.getPersistentData();
 
         if (!ConfigHandler.resetRowOnDeath.get()) {
-            newData.putInt("SleepRow", oldData.getInt("SleepRow"));
+            newData.putInt("SleepRow", oldData.getIntOr("SleepRow", 0));
         }
     }
 }
