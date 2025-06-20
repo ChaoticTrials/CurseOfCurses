@@ -53,7 +53,7 @@ public class CurseOfCurses {
 
     @SubscribeEvent
     public void onSleep(PlayerWakeUpEvent event) {
-        if (!event.getEntity().getCommandSenderWorld().isClientSide && ConfigHandler.curseForSleep.get()) {
+        if (!event.getEntity().level().isClientSide && ConfigHandler.curseForSleep.get()) {
             ServerPlayer player = (ServerPlayer) event.getEntity();
 
             int row = ConfigHandler.sleepsInARow.get();
