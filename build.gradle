@@ -57,6 +57,8 @@ mod.configure {
             version '1.21.6'
             version '1.21.7'
             version '1.21.8'
+            version '1.21.9'
+            version '1.21.10'
         }
         curseforge {
             projectId 382881

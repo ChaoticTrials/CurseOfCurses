@@ -38,7 +38,7 @@ public class CurseOfCurses {
         Player player = event.getEntity();
         Level level = player.level();
 
-        if (!level.isClientSide && ConfigHandler.cooldownSetting.get().test(level.getMoonPhase()) && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getDayTime() % 24000)) {
+        if (!level.isClientSide() && ConfigHandler.cooldownSetting.get().test(level.getMoonPhase()) && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getDayTime() % 24000)) {
             LOGGER.info("It's dange now.");
             CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), !ConfigHandler.cursePerItem.get());
         }
@@ -53,7 +53,7 @@ public class CurseOfCurses {
 
     @SubscribeEvent
     public void onSleep(PlayerWakeUpEvent event) {
-        if (!event.getEntity().level().isClientSide && ConfigHandler.curseForSleep.get()) {
+        if (!event.getEntity().level().isClientSide() && ConfigHandler.curseForSleep.get()) {
             ServerPlayer player = (ServerPlayer) event.getEntity();
 
             int row = ConfigHandler.sleepsInARow.get();
