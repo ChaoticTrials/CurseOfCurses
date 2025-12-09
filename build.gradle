@@ -10,7 +10,7 @@ repositories {
 }
 
 var dev = System.getenv('IS_DEV')?.toBoolean() ?: false
-var baseVersion = '21.6'
+var baseVersion = '21.11'
 
 mod.configure {
     modid 'curseofcurses'
@@ -25,7 +25,7 @@ mod.configure {
         }
     }
 
-    neoforge project.hasProperty('neo_version') ? project.neo_version : "${baseVersion}.8-beta"
+    neoforge "${baseVersion}.0-beta"
 
     license 'MIT License'
     github 'ChaoticTrials/CurseOfCurses'
@@ -54,11 +54,7 @@ mod.configure {
     upload {
         all {
             type 'beta'
-            version '1.21.6'
-            version '1.21.7'
-            version '1.21.8'
-            version '1.21.9'
-            version '1.21.10'
+            version '1.21.11'
         }
         curseforge {
             projectId 382881

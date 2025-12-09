@@ -6,7 +6,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -71,7 +70,7 @@ public class CurseUtil {
                     curse.ifPresent(enchantment -> {
                         stack.enchant(enchantment, enchantment.value().getMaxLevel());
                         player.displayClientMessage(Component.translatable("curseofcurses.message", stack.getHoverName(), Enchantment.getFullname(enchantment, enchantment.value().getMaxLevel())), false);
-                        player.playNotifySound(SoundEvents.WITHER_AMBIENT, SoundSource.AMBIENT, 0.5F, 0.1F);
+                        player.playSound(SoundEvents.WITHER_AMBIENT, 0.5F, 0.1F);
                     });
                 }
 

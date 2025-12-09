@@ -5,8 +5,10 @@ import de.melanx.curseofcurses.data.CursedData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -38,7 +40,7 @@ public class CurseOfCurses {
         Player player = event.getEntity();
         Level level = player.level();
 
-        if (!level.isClientSide() && ConfigHandler.cooldownSetting.get().test(level.getMoonPhase()) && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getDayTime() % 24000)) {
+        if (!level.isClientSide() && ConfigHandler.cooldownSetting.get().test(level.environmentAttributes().getValue(EnvironmentAttributes.MOON_PHASE, player.position()).ordinal()) && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getDayTime() % 24000)) {
             LOGGER.info("It's dange now.");
             CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), !ConfigHandler.cursePerItem.get());
         }
@@ -46,7 +48,7 @@ public class CurseOfCurses {
 
     @SubscribeEvent
     public void onWorldTick(LevelTickEvent.Pre event) {
-        if (event.getLevel() instanceof ServerLevel level && level == level.getServer().overworld() && ConfigHandler.cooldownSetting.get().test(level.getMoonPhase() - 1) && level.getDayTime() % 24000 == 12000) {
+        if (event.getLevel() instanceof ServerLevel level && level == level.getServer().overworld() && ConfigHandler.cooldownSetting.get().test(level.environmentAttributes().getValue(EnvironmentAttributes.MOON_PHASE, Vec3.ZERO).ordinal() - 1) && level.getDayTime() % 24000 == 12000) {
             CursedData.get(level).generateTimes();
         }
     }
