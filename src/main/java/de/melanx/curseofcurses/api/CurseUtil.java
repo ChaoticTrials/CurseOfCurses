@@ -69,7 +69,7 @@ public class CurseUtil {
 
                     curse.ifPresent(enchantment -> {
                         stack.enchant(enchantment, enchantment.value().getMaxLevel());
-                        player.displayClientMessage(Component.translatable("curseofcurses.message", stack.getHoverName(), Enchantment.getFullname(enchantment, enchantment.value().getMaxLevel())), false);
+                        player.sendSystemMessage(Component.translatable("curseofcurses.message", stack.getHoverName(), Enchantment.getFullname(enchantment, enchantment.value().getMaxLevel())));
                         player.playSound(SoundEvents.WITHER_AMBIENT, 0.5F, 0.1F);
                     });
                 }

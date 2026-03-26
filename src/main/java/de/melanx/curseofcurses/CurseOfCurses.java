@@ -18,6 +18,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class CurseOfCurses {
         Player player = event.getEntity();
         Level level = player.level();
 
-        if (!level.isClientSide() && ConfigHandler.cooldownSetting.get().test(level.environmentAttributes().getValue(EnvironmentAttributes.MOON_PHASE, player.position()).ordinal()) && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getDayTime() % 24000)) {
+        if (!level.isClientSide() && ConfigHandler.cooldownSetting.get().test(level.environmentAttributes().getValue(EnvironmentAttributes.MOON_PHASE, player.position()).ordinal()) && CursedData.get((ServerLevel) level).getTimes().contains((int) level.getOverworldClockTime() % 24000)) {
             LOGGER.info("It's dange now.");
             CurseUtil.applyCursesRandomly(player, ConfigHandler.curseChance.get(), ConfigHandler.enchantedCurses.get(), !ConfigHandler.cursePerItem.get());
         }
@@ -48,7 +49,7 @@ public class CurseOfCurses {
 
     @SubscribeEvent
     public void onWorldTick(LevelTickEvent.Pre event) {
-        if (event.getLevel() instanceof ServerLevel level && level == level.getServer().overworld() && ConfigHandler.cooldownSetting.get().test(level.environmentAttributes().getValue(EnvironmentAttributes.MOON_PHASE, Vec3.ZERO).ordinal() - 1) && level.getDayTime() % 24000 == 12000) {
+        if (event.getLevel() instanceof ServerLevel level && level == level.getServer().overworld() && ConfigHandler.cooldownSetting.get().test(level.environmentAttributes().getValue(EnvironmentAttributes.MOON_PHASE, Vec3.ZERO).ordinal() - 1) && level.getOverworldClockTime() % 24000 == 12000) {
             CursedData.get(level).generateTimes();
         }
     }
@@ -84,6 +85,15 @@ public class CurseOfCurses {
 
         if (!ConfigHandler.resetRowOnDeath.get()) {
             newData.putInt("SleepRow", oldData.getIntOr("SleepRow", 0));
+        }
+    }
+
+    @SubscribeEvent
+    public void serverStarted(ServerStartedEvent event) {
+        ServerLevel overworld = event.getServer().overworld();
+        CursedData cursedData = CursedData.get(overworld);
+        if (cursedData.getTimes().isEmpty()) {
+            cursedData.generateTimes();
         }
     }
 }
